@@ -290,7 +290,7 @@ gh config clear-cache
 
 ```bash
 # GitHub token (for automation)
-export GH_TOKEN=ghp_xxxxxxxxxxxx
+export GH_TOKEN=YOUR_GITHUB_TOKEN
 
 # GitHub hostname
 export GH_HOST=github.com
@@ -474,8 +474,8 @@ gh repo create my-repo --license mit
 # Create with gitignore
 gh repo create my-repo --gitignore python
 
-# Initialize as template repository
-gh repo create my-repo --template
+# Create from an existing template repository
+gh repo create my-repo --public --template owner/template-repo
 
 # Create repository in organization
 gh repo create org/my-repo
@@ -920,8 +920,8 @@ gh pr create --reviewer user1,user2
 # Add labels
 gh pr create --labels enhancement,feature
 
-# Link to issue
-gh pr create --issue 123
+# Link to issue in the pull request body
+gh pr create --body "Fixes #123"
 
 # Create in specific repository
 gh pr create --repo owner/repo
@@ -1045,10 +1045,11 @@ gh pr merge 123 --delete-branch
 # Merge with comment
 gh pr merge 123 --subject "Merge PR #123" --body "Merging feature"
 
-# Merge draft PR
-gh pr merge 123 --admin
+# Mark a draft PR as ready before merging
+gh pr ready 123
+gh pr merge 123
 
-# Force merge (skip checks)
+# Bypass branch protection requirements (administrators only)
 gh pr merge 123 --admin
 ```
 
@@ -1293,9 +1294,8 @@ gh workflow run ci.yml
 
 # Run with inputs
 gh workflow run ci.yml \
-  --raw-field \
-  version="1.0.0" \
-  environment="production"
+  --raw-field version="1.0.0" \
+  --raw-field environment="production"
 
 # Run from specific branch
 gh workflow run ci.yml --ref develop
@@ -1428,7 +1428,7 @@ gh project item-list 123
 gh project item-create 123 --title "New item"
 
 # Add item to project
-gh project item-add 123 --owner-owner --repo repo --issue 456
+gh project item-add 123 --owner owner --url https://github.com/owner/repo/issues/456
 
 # Edit item
 gh project item-edit 123 --id 456 --title "Updated title"
@@ -1489,14 +1489,14 @@ gh release upload v1.0.0 ./file.tar.gz
 # Upload multiple assets
 gh release upload v1.0.0 ./file1.tar.gz ./file2.tar.gz
 
-# Upload with label (casing sensitive)
-gh release upload v1.0.0 ./file.tar.gz --casing
+# Upload with a display label
+gh release upload v1.0.0 './file.tar.gz#Linux archive'
 
 # Delete release
 gh release delete v1.0.0
 
-# Delete with cleanup tag
-gh release delete v1.0.0 --yes
+# Delete release and its tag without confirmation
+gh release delete v1.0.0 --cleanup-tag --yes
 
 # Delete specific asset
 gh release delete-asset v1.0.0 file.tar.gz
@@ -1526,10 +1526,10 @@ gh release verify-asset v1.0.0 file.tar.gz
 ## Gists (gh gist)
 
 ```bash
-# List gists
+# List all gists (public and secret)
 gh gist list
 
-# List all gists (including private)
+# List only public gists
 gh gist list --public
 
 # Limit results
@@ -1617,7 +1617,8 @@ gh codespace delete
 # View logs
 gh codespace logs
 
---tail 100
+# Follow logs
+gh codespace logs --follow
 
 # View ports
 gh codespace ports
@@ -1968,17 +1969,10 @@ gh agent-task create --description "My task"
 | -------------------------- | -------------------------------------- |
 | `--help` / `-h`            | Show help for command                  |
 | `--version`                | Show gh version                        |
-| `--repo [HOST/]OWNER/REPO` | Select another repository              |
-| `--hostname HOST`          | GitHub hostname                        |
-| `--jq EXPRESSION`          | Filter JSON output                     |
-| `--json FIELDS`            | Output JSON with specified fields      |
-| `--template STRING`        | Format JSON using Go template          |
-| `--web`                    | Open in browser                        |
-| `--paginate`               | Make additional API calls              |
-| `--verbose`                | Show verbose output                    |
-| `--debug`                  | Show debug output                      |
-| `--timeout SECONDS`        | Maximum API request duration           |
-| `--cache CACHE`            | Cache control (default, force, bypass) |
+
+Other frequently used options, including `--repo`, `--json`, `--jq`,
+`--template`, and `--web`, are command-specific. Run
+`gh <command> <subcommand> --help` to see which options a command supports.
 
 ## Output Formatting
 
@@ -2072,8 +2066,9 @@ gh label create documentation --color "0075ca" --description "Documentation"
 ### CI/CD Workflow
 
 ```bash
-# Run workflow and wait
-RUN_ID=$(gh workflow run ci.yml --ref main --jq '.databaseId')
+# Dispatch the workflow and capture its returned run URL
+RUN_URL=$(gh workflow run ci.yml --ref main)
+RUN_ID=${RUN_URL##*/}
 
 # Watch the run
 gh run watch "$RUN_ID"
@@ -2121,14 +2116,8 @@ alias gco='gh pr checkout'
 ### Git Configuration
 
 ```bash
-# Use gh as credential helper
+# Configure Git to use gh as the credential helper for authenticated hosts
 gh auth setup-git
-
-# Set gh as default for repo operations
-git config --global credential.helper 'gh !gh auth setup-git'
-
-# Or manually
-git config --global credential.helper github
 ```
 
 ## Best Practices

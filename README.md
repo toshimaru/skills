@@ -1,11 +1,26 @@
 # Agent Skills
 
-A collection of reusable skills for AI coding agents.
+My skills collection for AI coding agents.
+
+## Prerequisite
+
+- [GitHub CLI](https://cli.github.com/) with `gh skill` support.
+
+## Installation
+
+```console
+$ gh skill install toshimaru/skills
+```
+
+<details>
+  <summary>Install skills to `~/.agents/skills` directory</summary>
+
+```console
+$ gh skill install toshimaru/skills --scope user --agent universal
+```
+
+</details>
 
 ## Available skills
 
-### [gh-cli](skills/gh-cli/SKILL.md)
-
-A comprehensive GitHub CLI (`gh`) reference covering repositories, issues,
-pull requests, Actions, projects, releases, gists, Codespaces, organizations,
-extensions, and other GitHub operations from the command line.
+- [gh-cli](skills/gh-cli/SKILL.md)

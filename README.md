@@ -24,3 +24,10 @@ $ gh skill install toshimaru/skills --scope user --agent universal
 ## Available skills
 
 - [gh-cli](skills/gh-cli/SKILL.md)
+
+## Favorite skills
+
+- [anthropics/claude-plugins-community](https://github.com/anthropics/claude-plugins-community)
+  - eli5
+- [anthropics/knowledge-work-plugins](https://github.com/anthropics/knowledge-work-plugins)
+- [addyosmani/agent-skills](https://github.com/addyosmani/agent-skills)
